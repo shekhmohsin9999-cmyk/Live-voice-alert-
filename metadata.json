@@ -1,0 +1,6 @@
+{
+  "name": "LIVE VOICE ALERT",
+  "description": "Professional Merchant UPI payment voice alert and Soundbox application with real-time audio announcements, multi-language support, payment statistics, and license management.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

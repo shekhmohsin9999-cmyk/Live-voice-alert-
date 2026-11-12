@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- 1. Permission to read incoming notifications (Crucial for UPI apps) -->
+    <!-- SoundboxNotificationService declares BIND_NOTIFICATION_LISTENER_SERVICE -->
+
+    <!-- 2. WakeLock: Allows device CPU to wake up and announce payment even when screen is locked/sleeping -->
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+
+    <!-- 3. Post Notifications (Required for Android 13+ foreground service status) -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
+    <!-- 4. Foreground Service for continuous background operation & audio playback -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
+
+    <!-- 5. Boot Completed: Auto-start or refresh service after phone restart -->
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+
+    <!-- 6. Battery optimization ignore (Prevents Android from killing the service) -->
+    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
+
+    <!-- 7. Audio Settings: Allows soundbox to adjust volume before speaking -->
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+
+    <!-- 8. Vibration feedback on payment detection -->
+    <uses-permission android:name="android.permission.VIBRATE" />
+
+    <application
+        android:name=".SoundboxApplication"
+        android:allowBackup="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.MyApplication">
+
+        <!-- Main Dashboard Activity -->
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:windowSoftInputMode="adjustResize"
+            android:label="@string/app_name"
+            android:theme="@style/Theme.MyApplication">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!-- ============================================================= -->
+        <!-- CORE SOUNDBOX SERVICE: NotificationListenerService            -->
+        <!-- Listens to incoming UPI notifications (GPay, PhonePe, Paytm)   -->
+        <!-- ============================================================= -->
+        <service
+            android:name=".service.SoundboxNotificationService"
+            android:label="UPI Soundbox Announcer"
+            android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.service.notification.NotificationListenerService" />
+            </intent-filter>
+        </service>
+
+        <!-- Foreground Service for Voice Alert Playback / Audio announcements -->
+        <service
+            android:name=".service.SoundboxForegroundService"
+            android:exported="false"
+            android:foregroundServiceType="mediaPlayback" />
+
+        <!-- Boot Receiver to keep service persistent -->
+        <receiver
+            android:name=".receiver.BootReceiver"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.QUICKBOOT_POWERON" />
+            </intent-filter>
+        </receiver>
+
+    </application>
+
+</manifest>
